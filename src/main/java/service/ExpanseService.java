@@ -42,10 +42,15 @@ public class ExpanseService {
         writeJsonToFile(json);
     }
 
-    public void updateExpanse(int id, String description) {
+    public void printAllExpanses() {
+        expanses.values().forEach(System.out::println);
+    }
+
+    public void updateExpanse(int id, String description, int amount) {
         Expanse expanse = expanses.get(id);
         if (expanse != null) {
             expanse.setDescription(description);
+            expanse.setAmount(amount);
             saveExpanses();
         } else {
             System.out.println("Expanse with ID: " + id + " not found!");
@@ -104,24 +109,13 @@ public class ExpanseService {
         saveExpanses();
     }
 
-    public void printUsage() {
-        System.out.println("""
-                expanse-cli add \\"<expanse_description>\\"  - Add a new expanse
-                expanse-cli list                       - List all expanses
-                expanse-cli update <id> <new description>         - Updates the expanses where id = ?
-                """);
-    }
-
-    public Optional<Integer> checkIfNumeric(String str) {
-        if (str == null || str.isEmpty()) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(Integer.parseInt(str));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
+//    public void printUsage() {
+//        System.out.println("""
+//                expanse-cli add \\"<expanse_description>\\"  - Add a new expanse
+//                expanse-cli list                       - List all expanses
+//                expanse-cli update <id> <new description>         - Updates the expanses where id = ?
+//                """);
+//    }
 
     public String toJson(Expanse expanse) {
         return "{" +
@@ -156,4 +150,15 @@ public class ExpanseService {
         }
     }
 
+    public void summary(int month) {
+        int sum = 0;
+        for (Expanse val: expanses.values()) {
+            if (month != 0) {
+                if (val.getCreatedAt().getMonthValue() == month) sum += val.getAmount();
+            } else {
+                sum += val.getAmount();
+            }
+        }
+        System.out.println(sum);
+    }
 }
